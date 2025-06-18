@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}Login - Gestão Financeira{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="min-height: 75vh;">
+    <div class="card shadow p-4" style="width: 100%; max-width: 400px; border-top: 4px solid #026fff;">
+        <h3 class="text-center text-dark mb-4">Acesso ao Sistema</h3>
+        <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_username" class="form-label">Usuário</label>
+                <input type="text" name="username" autofocus required id="id_username"
+                       class="form-control" value="{{ form.username.value|default_if_none:'' }}">
+            </div>
+            <div class="mb-3">
+                <label for="id_password" class="form-label">Senha</label>
+                <input type="password" name="password" required id="id_password"
+                       class="form-control">
+            </div>
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn btn-primary text-white fw-bold">Entrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

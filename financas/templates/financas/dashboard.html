@@ -1,41 +1,76 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="text-center">Bem-vindo ao Dashboard</h1>
-        <p class="text-center">Gerencie suas receitas e despesas.</p>
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
 
-        <!-- Exibe os totais -->
-        <div class="row text-center my-5">
-            <div class="col">
-                <h3>Receitas</h3>
-                <p class="text-success">R$ {{ total_receitas }}</p>
-            </div>
-            <div class="col">
-                <h3>Despesas</h3>
-                <p class="text-danger">R$ {{ total_despesas }}</p>
-            </div>
-            <div class="col">
-                <h3>Saldo</h3>
-                <p class="text-primary">R$ {{ saldo_atual }}</p>
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Bem-vindo ao Dashboard</h1>
+        <p class="lead text-muted">Gerencie suas receitas e despesas com facilidade.</p>
+    </div>
+
+    <div class="row text-center mb-4">
+        <div class="col-md-4">
+            <div class="card border-success shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Receitas</h5>
+                    <p class="card-text text-success fs-4">R$ {{ total_receitas|default:"0" }}</p>
+                </div>
             </div>
         </div>
+        <div class="col-md-4">
+            <div class="card border-danger shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Despesas</h5>
+                    <p class="card-text text-danger fs-4">R$ {{ total_despesas|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-primary shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Saldo</h5>
+                    <p class="card-text text-primary fs-4">R$ {{ saldo_atual|default:"0" }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <!-- Lista de transações -->
-        <h2 class="my-4">Transações Recentes</h2>
-        <table>
-            <thead>
+    <form method="get" class="row g-3 mb-4 align-items-end">
+        <div class="col-md-3">
+            <label for="data_inicio" class="form-label">De:</label>
+            <input type="date" name="data_inicio" id="data_inicio" class="form-control" value="{{ request.GET.data_inicio }}">
+        </div>
+        <div class="col-md-3">
+            <label for="data_fim" class="form-label">Até:</label>
+            <input type="date" name="data_fim" id="data_fim" class="form-control" value="{{ request.GET.data_fim }}">
+        </div>
+        <div class="col-md-3">
+            <label for="categoria" class="form-label">Categoria:</label>
+            <select name="categoria" id="categoria" class="form-select">
+                <option value="">Todas</option>
+                <option value="Receita" {% if request.GET.categoria == "Receita" %}selected{% endif %}>Receita</option>
+                <option value="Despesa" {% if request.GET.categoria == "Despesa" %}selected{% endif %}>Despesa</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-grid">
+            <button type="submit" class="btn btn-outline-primary fw-bold">🔍 Filtrar</button>
+        </div>
+    </form>
+
+    <div class="d-flex justify-content-end mb-3">
+        <a href="{% url 'criar_transacao' %}" class="btn btn-primary fw-bold">+ Nova Transação</a>
+    </div>
+
+    <h3>Transações Recentes</h3>
+    {% if transacoes %}
+        <table class="table table-striped table-hover mt-3">
+            <thead class="table-dark">
                 <tr>
                     <th>Descrição</th>
                     <th>Categoria</th>
                     <th>Valor</th>
                     <th>Data</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -45,14 +80,18 @@
                     <td>{{ transacao.categoria }}</td>
                     <td>R$ {{ transacao.valor }}</td>
                     <td>{{ transacao.data }}</td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="4">Nenhuma transação encontrada.</td>
+                    <td>
+                        <a href="{% url 'editar_transacao' transacao.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+                        <a href="{% url 'excluir_transacao' transacao.id %}" class="btn btn-sm btn-outline-danger">Excluir</a>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>        
-    </div>
-</body>
-</html>
+        </table>
+    {% else %}
+        <div class="alert alert-warning mt-3" role="alert">
+            Nenhuma transação encontrada.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
