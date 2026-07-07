@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}Nova Categoria{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-top border-4 border-primary">
+                <div class="card-body">
+                    <h4 class="card-title text-center mb-4">Nova Categoria</h4>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+
+                        <div class="mb-3">
+                            <label class="form-label">Nome da categoria</label>
+                            {{ form.nome }}
+                        </div>
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary fw-bold">
+                                Salvar Categoria
+                            </button>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary mt-2">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,18 @@
+
+{% extends 'base.html' %}
+{% block title %}Excluir Transação{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="alert alert-danger">
+        <h4 class="alert-heading">Tem certeza?</h4>
+        <p>Você está prestes a excluir a transação <strong>"{{ transacao.descricao }}"</strong> no valor de <strong>R$ {{ transacao.valor }}</strong>.</p>
+        <hr>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
