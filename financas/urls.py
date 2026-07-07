@@ -13,4 +13,5 @@ urlpatterns = [
     path("excluir-transacao/<int:pk>/", views.excluir_transacao, name="excluir_transacao"),
 
     path("categorias/nova/", views.criar_categoria, name="criar_categoria"),
+    path("relatorios/", views.relatorios, name="relatorios"),
 ]

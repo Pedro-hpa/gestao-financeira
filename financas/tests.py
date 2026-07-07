@@ -68,3 +68,14 @@ class TransacaoTests(TestCase):
                 usuario=self.usuario1
             ).exists()
         )
+
+def test_relatorios_exige_login(self):
+    response = self.client.get(reverse("relatorios"))
+    self.assertEqual(response.status_code, 302)
+
+
+def test_usuario_logado_acessa_relatorios(self):
+    self.client.login(username="usuario1", password="senha12345")
+    response = self.client.get(reverse("relatorios"))
+    self.assertEqual(response.status_code, 200)
+    self.assertContains(response, "Relatórios Financeiros")
