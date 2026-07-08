@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-    {% if categoria %}Editar Categoria{% else %}Nova Categoria{% endif %}
+    {% if conta %}Editar Conta{% else %}Nova Conta{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -12,10 +12,10 @@
                 <div class="card-body">
 
                     <h4 class="card-title text-center mb-4">
-                        {% if categoria %}
-                            Editar Categoria
+                        {% if conta %}
+                            Editar Conta / Carteira
                         {% else %}
-                            Nova Categoria
+                            Nova Conta / Carteira
                         {% endif %}
                     </h4>
 
@@ -24,21 +24,33 @@
                         {{ form.non_field_errors }}
 
                         <div class="mb-3">
-                            <label class="form-label">Nome da categoria</label>
+                            <label class="form-label">Nome da conta</label>
                             {{ form.nome }}
                             {{ form.nome.errors }}
                         </div>
 
+                        <div class="mb-3">
+                            <label class="form-label">Tipo</label>
+                            {{ form.tipo }}
+                            {{ form.tipo.errors }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Saldo inicial</label>
+                            {{ form.saldo_inicial }}
+                            {{ form.saldo_inicial.errors }}
+                        </div>
+
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary fw-bold">
-                                {% if categoria %}
+                                {% if conta %}
                                     Salvar Alterações
                                 {% else %}
-                                    Salvar Categoria
+                                    Salvar Conta
                                 {% endif %}
                             </button>
 
-                            <a href="{% url 'listar_categorias' %}" class="btn btn-outline-secondary mt-2">
+                            <a href="{% url 'listar_contas' %}" class="btn btn-outline-secondary mt-2">
                                 Cancelar
                             </a>
                         </div>

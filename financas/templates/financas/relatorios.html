@@ -8,7 +8,7 @@
         <div>
             <h1 class="display-6 fw-bold mb-1">Relatórios Financeiros</h1>
             <p class="text-muted mb-0">
-                Analise suas receitas, despesas, categorias e evolução financeira.
+                Analise suas receitas, despesas, contas, categorias e evolução financeira.
             </p>
         </div>
 
@@ -55,7 +55,23 @@
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
+            <label for="conta" class="form-label">Conta:</label>
+            <select name="conta" id="conta" class="form-select">
+                <option value="">Todas</option>
+
+                {% for conta in contas %}
+                    <option 
+                        value="{{ conta.id }}" 
+                        {% if request.GET.conta == conta.id|stringformat:"s" %}selected{% endif %}
+                    >
+                        {{ conta.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
             <label for="categoria" class="form-label">Categoria:</label>
             <select name="categoria" id="categoria" class="form-select">
                 <option value="">Todas</option>
@@ -84,7 +100,7 @@
             </select>
         </div>
 
-        <div class="col-md-1 d-grid">
+        <div class="col-md-12 d-grid">
             <button type="submit" class="btn btn-primary fw-bold">
                 Filtrar
             </button>
@@ -184,6 +200,60 @@
         </div>
     </div>
 
+    {% if resumo_por_conta %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Resumo por Conta</h5>
+
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Conta</th>
+                                <th>Tipo</th>
+                                <th>Receitas</th>
+                                <th>Despesas</th>
+                                <th>Saldo</th>
+                                <th>Qtd.</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for item in resumo_por_conta %}
+                                <tr>
+                                    <td>{{ item.conta_nome }}</td>
+                                    <td>{{ item.conta_tipo }}</td>
+
+                                    <td class="text-success">
+                                        R$ {{ item.receitas|floatformat:2 }}
+                                    </td>
+
+                                    <td class="text-danger">
+                                        R$ {{ item.despesas|floatformat:2 }}
+                                    </td>
+
+                                    <td class="fw-bold">
+                                        {% if item.saldo >= 0 %}
+                                            <span class="text-success">
+                                                R$ {{ item.saldo|floatformat:2 }}
+                                            </span>
+                                        {% else %}
+                                            <span class="text-danger">
+                                                R$ {{ item.saldo|floatformat:2 }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>{{ item.quantidade }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row mb-4">
         <div class="col-md-8 mb-3">
             <div class="card shadow-sm h-100">
@@ -204,7 +274,7 @@
         </div>
     </div>
 
-    <div class="row">
+    <div class="row mb-4">
         <div class="col-md-7 mb-3">
             <div class="card shadow-sm">
                 <div class="card-body">
@@ -226,23 +296,26 @@
                                     {% for item in movimento_mensal %}
                                         <tr>
                                             <td>{{ item.mes|date:"m/Y" }}</td>
+
                                             <td class="text-success">
                                                 R$ {{ item.receitas|default:0|floatformat:2 }}
                                             </td>
+
                                             <td class="text-danger">
                                                 R$ {{ item.despesas|default:0|floatformat:2 }}
                                             </td>
+
                                             <td>
-    {% if item.saldo >= 0 %}
-        <span class="text-success">
-            R$ {{ item.saldo|floatformat:2 }}
-        </span>
-    {% else %}
-        <span class="text-danger">
-            R$ {{ item.saldo|floatformat:2 }}
-        </span>
-    {% endif %}
-</td>
+                                                {% if item.saldo >= 0 %}
+                                                    <span class="text-success">
+                                                        R$ {{ item.saldo|floatformat:2 }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class="text-danger">
+                                                        R$ {{ item.saldo|floatformat:2 }}
+                                                    </span>
+                                                {% endif %}
+                                            </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -281,7 +354,9 @@
                                                     Sem categoria
                                                 {% endif %}
                                             </td>
+
                                             <td>{{ item.quantidade }}</td>
+
                                             <td class="text-danger">
                                                 R$ {{ item.total|floatformat:2 }}
                                             </td>
@@ -295,6 +370,84 @@
                     {% endif %}
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">Transações do Período</h5>
+
+            {% if transacoes %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Tipo</th>
+                                <th>Categoria</th>
+                                <th>Conta</th>
+                                <th>Status</th>
+                                <th>Valor</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for transacao in transacoes %}
+                                <tr>
+                                    <td>{{ transacao.descricao }}</td>
+
+                                    <td>
+                                        {% if transacao.tipo == "Receita" %}
+                                            <span class="badge bg-success">Receita</span>
+                                        {% elif transacao.tipo == "Despesa" %}
+                                            <span class="badge bg-danger">Despesa</span>
+                                        {% else %}
+                                            {{ transacao.tipo }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if transacao.categoria %}
+                                            {{ transacao.categoria.nome }}
+                                        {% else %}
+                                            <span class="text-muted">Sem categoria</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if transacao.conta %}
+                                            {{ transacao.conta.nome }}
+                                        {% else %}
+                                            <span class="text-muted">Sem conta</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        {% if transacao.status == "Pago" %}
+                                            <span class="badge bg-primary">Pago</span>
+                                        {% elif transacao.status == "Pendente" %}
+                                            <span class="badge bg-warning text-dark">Pendente</span>
+                                        {% else %}
+                                            {{ transacao.status }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        R$ {{ transacao.valor|floatformat:2 }}
+                                    </td>
+
+                                    <td>
+                                        {{ transacao.data|date:"d/m/Y" }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">Nenhuma transação encontrada no período.</p>
+            {% endif %}
         </div>
     </div>
 

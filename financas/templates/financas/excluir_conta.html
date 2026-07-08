@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Excluir Conta{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow border-top border-4 border-danger">
+                <div class="card-body text-center">
+
+                    <h4 class="card-title mb-3">Excluir Conta</h4>
+
+                    <p class="text-muted">
+                        Tem certeza que deseja excluir a conta abaixo?
+                    </p>
+
+                    <h5 class="fw-bold">
+                        {{ conta.nome }}
+                    </h5>
+
+                    <p class="text-muted">
+                        Tipo: {{ conta.tipo }}
+                    </p>
+
+                    <div class="alert alert-warning mt-3">
+                        As transações vinculadas a esta conta não serão apagadas.
+                        Elas ficarão como <strong>Sem conta</strong>.
+                    </div>
+
+                    <form method="post" class="mt-4">
+                        {% csrf_token %}
+
+                        <button type="submit" class="btn btn-danger fw-bold">
+                            Sim, excluir conta
+                        </button>
+
+                        <a href="{% url 'listar_contas' %}" class="btn btn-outline-secondary ms-2">
+                            Cancelar
+                        </a>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

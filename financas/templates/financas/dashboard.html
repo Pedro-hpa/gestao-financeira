@@ -13,7 +13,7 @@
         <div class="col-md-4 mb-3">
             <div class="card border-success shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Receitas</h5>
+                    <h5 class="card-title">Receitas do mês</h5>
                     <p class="card-text text-success fs-4">
                         R$ {{ total_receitas|floatformat:2 }}
                     </p>
@@ -24,7 +24,7 @@
         <div class="col-md-4 mb-3">
             <div class="card border-danger shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Despesas</h5>
+                    <h5 class="card-title">Despesas do mês</h5>
                     <p class="card-text text-danger fs-4">
                         R$ {{ total_despesas|floatformat:2 }}
                     </p>
@@ -35,7 +35,7 @@
         <div class="col-md-4 mb-3">
             <div class="card border-primary shadow-sm h-100">
                 <div class="card-body">
-                    <h5 class="card-title">Saldo</h5>
+                    <h5 class="card-title">Saldo geral</h5>
                     <p class="card-text text-primary fs-4">
                         R$ {{ saldo_atual|floatformat:2 }}
                     </p>
@@ -43,6 +43,29 @@
             </div>
         </div>
     </div>
+
+    {% if contas_com_saldo %}
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Saldos por Conta</h5>
+
+                <div class="row">
+                    {% for item in contas_com_saldo %}
+                        <div class="col-md-3 mb-3">
+                            <div class="border rounded p-3 h-100 bg-light">
+                                <h6 class="mb-1">{{ item.conta.nome }}</h6>
+                                <small class="text-muted">{{ item.conta.tipo }}</small>
+
+                                <p class="fs-5 fw-bold mt-2 mb-0">
+                                    R$ {{ item.saldo|floatformat:2 }}
+                                </p>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
 
     <form method="get" class="row g-3 mb-4 align-items-end">
         <div class="col-md-2">
@@ -80,7 +103,23 @@
             </select>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-2">
+            <label for="conta" class="form-label">Conta:</label>
+            <select name="conta" id="conta" class="form-select">
+                <option value="">Todas</option>
+
+                {% for conta in contas %}
+                    <option 
+                        value="{{ conta.id }}" 
+                        {% if request.GET.conta == conta.id|stringformat:"s" %}selected{% endif %}
+                    >
+                        {{ conta.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
             <label for="categoria" class="form-label">Categoria:</label>
             <select name="categoria" id="categoria" class="form-select">
                 <option value="">Todas</option>
@@ -109,7 +148,7 @@
             </select>
         </div>
 
-        <div class="col-md-1 d-grid">
+        <div class="col-md-12 d-grid">
             <button type="submit" class="btn btn-outline-primary fw-bold">
                 Filtrar
             </button>
@@ -124,8 +163,20 @@
                 Relatórios
             </a>
 
+            <a href="{% url 'listar_contas' %}" class="btn btn-outline-dark fw-bold me-2">
+                Contas
+            </a>
+
+            <a href="{% url 'listar_categorias' %}" class="btn btn-outline-dark fw-bold me-2">
+                Categorias
+            </a>
+
             <a href="{% url 'criar_categoria' %}" class="btn btn-outline-primary fw-bold me-2">
                 + Nova Categoria
+            </a>
+
+            <a href="{% url 'criar_conta' %}" class="btn btn-outline-primary fw-bold me-2">
+                + Nova Conta
             </a>
 
             <a href="{% url 'criar_transacao' %}" class="btn btn-primary fw-bold">
@@ -142,6 +193,7 @@
                         <th>Descrição</th>
                         <th>Tipo</th>
                         <th>Categoria</th>
+                        <th>Conta</th>
                         <th>Status</th>
                         <th>Valor</th>
                         <th>Data</th>
@@ -169,6 +221,14 @@
                                     {{ transacao.categoria.nome }}
                                 {% else %}
                                     <span class="text-muted">Sem categoria</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if transacao.conta %}
+                                    {{ transacao.conta.nome }}
+                                {% else %}
+                                    <span class="text-muted">Sem conta</span>
                                 {% endif %}
                             </td>
 

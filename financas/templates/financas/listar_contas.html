@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% block title %}Contas{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="fw-bold mb-1">Contas / Carteiras</h1>
+            <p class="text-muted mb-0">
+                Gerencie suas contas e acompanhe o saldo individual de cada uma.
+            </p>
+        </div>
+
+        <div>
+            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary me-2">
+                Voltar ao Dashboard
+            </a>
+
+            <a href="{% url 'criar_conta' %}" class="btn btn-primary fw-bold">
+                + Nova Conta
+            </a>
+        </div>
+    </div>
+
+    {% if contas_com_saldo %}
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Nome</th>
+                                <th>Tipo</th>
+                                <th>Saldo inicial</th>
+                                <th>Receitas</th>
+                                <th>Despesas</th>
+                                <th>Saldo atual</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for item in contas_com_saldo %}
+                                <tr>
+                                    <td>{{ item.conta.nome }}</td>
+                                    <td>{{ item.conta.tipo }}</td>
+
+                                    <td>
+                                        R$ {{ item.conta.saldo_inicial|floatformat:2 }}
+                                    </td>
+
+                                    <td class="text-success">
+                                        R$ {{ item.receitas|floatformat:2 }}
+                                    </td>
+
+                                    <td class="text-danger">
+                                        R$ {{ item.despesas|floatformat:2 }}
+                                    </td>
+
+                                    <td class="fw-bold">
+                                        R$ {{ item.saldo|floatformat:2 }}
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a 
+                                            href="{% url 'editar_conta' item.conta.id %}" 
+                                            class="btn btn-sm btn-outline-secondary"
+                                        >
+                                            Editar
+                                        </a>
+
+                                        <a 
+                                            href="{% url 'excluir_conta' item.conta.id %}" 
+                                            class="btn btn-sm btn-outline-danger"
+                                        >
+                                            Excluir
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            Nenhuma conta cadastrada ainda.
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

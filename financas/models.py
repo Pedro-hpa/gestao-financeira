@@ -6,17 +6,64 @@ from django.utils import timezone
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
+
     usuario = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="categorias"
     )
+
     criado_em = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ["nome"]
         verbose_name = "Categoria"
         verbose_name_plural = "Categorias"
+        unique_together = ["nome", "usuario"]
+
+    def __str__(self):
+        return self.nome
+
+
+class Conta(models.Model):
+    CONTA_CORRENTE = "Conta corrente"
+    CARTEIRA = "Carteira"
+    POUPANCA = "Poupança"
+    INVESTIMENTO = "Investimento"
+
+    TIPO_CHOICES = [
+        (CONTA_CORRENTE, "Conta corrente"),
+        (CARTEIRA, "Carteira"),
+        (POUPANCA, "Poupança"),
+        (INVESTIMENTO, "Investimento"),
+    ]
+
+    nome = models.CharField(max_length=100)
+
+    tipo = models.CharField(
+        max_length=20,
+        choices=TIPO_CHOICES,
+        default=CONTA_CORRENTE,
+    )
+
+    saldo_inicial = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0,
+    )
+
+    usuario = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="contas",
+    )
+
+    criado_em = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ["nome"]
+        verbose_name = "Conta"
+        verbose_name_plural = "Contas"
         unique_together = ["nome", "usuario"]
 
     def __str__(self):
@@ -41,31 +88,50 @@ class Transacao(models.Model):
     ]
 
     descricao = models.CharField(max_length=120)
+
     valor = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         validators=[MinValueValidator(0.01)]
     )
+
     data = models.DateField()
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+
+    tipo = models.CharField(
+        max_length=10,
+        choices=TIPO_CHOICES
+    )
+
+    conta = models.ForeignKey(
+        Conta,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="transacoes",
+    )
+
     categoria = models.ForeignKey(
         Categoria,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="transacoes"
+        related_name="transacoes",
     )
+
     status = models.CharField(
         max_length=10,
         choices=STATUS_CHOICES,
         default=PAGO
     )
+
     usuario = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name="transacoes"
     )
+
     criado_em = models.DateTimeField(default=timezone.now)
+
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:

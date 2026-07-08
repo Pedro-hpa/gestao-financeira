@@ -1,50 +1,90 @@
 {% extends 'base.html' %}
-{% block title %}{{ titulo }}{% endblock %}
+{% block title %}
+    {% if transacao %}Editar Transação{% else %}Nova Transação{% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-7">
             <div class="card shadow border-top border-4 border-primary">
                 <div class="card-body">
-                    <h4 class="card-title text-center mb-4">{{ titulo }}</h4>
+
+                    <h4 class="card-title text-center mb-4">
+                        {% if transacao %}
+                            Editar Transação
+                        {% else %}
+                            Nova Transação
+                        {% endif %}
+                    </h4>
+
                     <form method="post">
                         {% csrf_token %}
                         {{ form.non_field_errors }}
+
                         <div class="mb-3">
                             <label class="form-label">Descrição</label>
                             {{ form.descricao }}
+                            {{ form.descricao.errors }}
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Valor</label>
                             {{ form.valor }}
+                            {{ form.valor.errors }}
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Data</label>
                             {{ form.data }}
+                            {{ form.data.errors }}
                         </div>
+
                         <div class="mb-3">
                             <label class="form-label">Tipo</label>
                             {{ form.tipo }}
+                            {{ form.tipo.errors }}
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Conta / Carteira</label>
+                            {{ form.conta }}
+                            {{ form.conta.errors }}
+
+                            <div class="form-text">
+                                Ainda não tem conta?
+                                <a href="{% url 'criar_conta' %}">Criar conta</a>
+                            </div>
+                        </div>
+
                         <div class="mb-3">
                             <label class="form-label">Categoria</label>
                             {{ form.categoria }}
+                            {{ form.categoria.errors }}
+
                             <div class="form-text">
                                 Ainda não tem categoria?
                                 <a href="{% url 'criar_categoria' %}">Criar categoria</a>
                             </div>
-                         </div>
-                         <div class="mb-3">
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label">Status</label>
                             {{ form.status }}
-                         </div>
+                            {{ form.status.errors }}
                         </div>
+
                         <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary fw-bold">Salvar</button>
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary mt-2">Cancelar</a>
+                            <button type="submit" class="btn btn-primary fw-bold">
+                                Salvar Transação
+                            </button>
+
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary mt-2">
+                                Cancelar
+                            </a>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
