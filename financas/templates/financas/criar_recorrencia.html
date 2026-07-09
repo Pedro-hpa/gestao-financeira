@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if recorrencia %}Editar Recorrência{% else %}Nova Recorrência{% endif %}
+{% endblock %}
+
+{% block page_title %}
+    {% if recorrencia %}Editar recorrência{% else %}Nova recorrência{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card app-card border-0">
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+                    <div class="form-page-icon mx-auto mb-3">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+
+                    <h4 class="fw-bold mb-1">
+                        {% if recorrencia %}
+                            Editar Recorrência
+                        {% else %}
+                            Nova Recorrência
+                        {% endif %}
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Cadastre lançamentos que se repetem automaticamente todos os meses.
+                    </p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Descrição
+                        </label>
+                        {{ form.descricao }}
+                        {{ form.descricao.errors }}
+
+                        <div class="form-text">
+                            Exemplo: Salário, aluguel, internet, academia ou assinatura.
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Valor
+                            </label>
+                            {{ form.valor }}
+                            {{ form.valor.errors }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Tipo
+                            </label>
+                            {{ form.tipo }}
+                            {{ form.tipo.errors }}
+                        </div>
+                    </div>
+
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                Período da recorrência
+                            </h6>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        Data de início
+                                    </label>
+                                    {{ form.data_inicio }}
+                                    {{ form.data_inicio.errors }}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        Data final
+                                    </label>
+                                    {{ form.data_fim }}
+                                    {{ form.data_fim.errors }}
+
+                                    <div class="form-text">
+                                        Pode deixar em branco.
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        Frequência
+                                    </label>
+                                    {{ form.frequencia }}
+                                    {{ form.frequencia.errors }}
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        Quantidade de meses
+                                    </label>
+                                    {{ form.quantidade_meses }}
+                                    {{ form.quantidade_meses.errors }}
+
+                                    <div class="form-text">
+                                        Exemplo: 12 meses gera 12 lançamentos futuros.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-bank me-1"></i>
+                                Classificação
+                            </h6>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Conta / Carteira
+                                </label>
+                                {{ form.conta }}
+                                {{ form.conta.errors }}
+
+                                <div class="form-text">
+                                    Ainda não tem conta?
+                                    <a href="{% url 'criar_conta' %}">Criar conta</a>.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Categoria
+                                </label>
+                                {{ form.categoria }}
+                                {{ form.categoria.errors }}
+
+                                <div class="form-text">
+                                    Ainda não tem categoria?
+                                    <a href="{% url 'criar_categoria' %}">Criar categoria</a>.
+                                </div>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label fw-semibold">
+                                    Status padrão
+                                </label>
+                                {{ form.status_padrao }}
+                                {{ form.status_padrao.errors }}
+
+                                <div class="form-text">
+                                    Use “Pendente” para lançamentos futuros que ainda não foram pagos.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-check mb-4">
+                        {{ form.ativa }}
+                        <label class="form-check-label fw-semibold" for="{{ form.ativa.id_for_label }}">
+                            Recorrência ativa
+                        </label>
+                        {{ form.ativa.errors }}
+
+                        <div class="form-text">
+                            Se estiver ativa, os lançamentos serão gerados no momento do cadastro.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info border-0 shadow-sm">
+                        <i class="bi bi-info-circle me-1"></i>
+                        Ao salvar uma nova recorrência, o sistema gera automaticamente os lançamentos futuros com base na quantidade de meses informada.
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold">
+                            <i class="bi bi-check2-circle me-1"></i>
+                            Salvar Recorrência
+                        </button>
+
+                        <a href="{% url 'listar_recorrencias' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

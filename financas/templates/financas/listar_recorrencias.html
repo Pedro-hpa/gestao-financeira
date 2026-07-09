@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+
+{% block title %}Recorrências{% endblock %}
+{% block page_title %}Transações recorrentes{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Transações Recorrentes</h2>
+        <p class="text-muted mb-0">
+            Gerencie lançamentos automáticos como salário, aluguel, internet, academia e assinaturas.
+        </p>
+    </div>
+
+    <div class="mt-3 mt-md-0 d-flex flex-wrap gap-2">
+        <a href="{% url 'criar_recorrencia' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>
+            Nova recorrência
+        </a>
+
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+            Voltar ao Dashboard
+        </a>
+    </div>
+</div>
+
+
+<div class="card app-card border-0">
+    <div class="card-body">
+        {% if recorrencias %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Tipo</th>
+                            <th>Valor</th>
+                            <th>Conta</th>
+                            <th>Categoria</th>
+                            <th>Frequência</th>
+                            <th>Período</th>
+                            <th>Status padrão</th>
+                            <th>Situação</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for recorrencia in recorrencias %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ recorrencia.descricao }}
+                                    </div>
+
+                                    <small class="text-muted">
+                                        {{ recorrencia.quantidade_meses }} mês(es) programado(s)
+                                    </small>
+                                </td>
+
+                                <td>
+                                    {% if recorrencia.tipo == "Receita" %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                            Receita
+                                        </span>
+                                    {% elif recorrencia.tipo == "Despesa" %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                            Despesa
+                                        </span>
+                                    {% else %}
+                                        {{ recorrencia.tipo }}
+                                    {% endif %}
+                                </td>
+
+                                <td class="fw-semibold">
+                                    R$ {{ recorrencia.valor|floatformat:2 }}
+                                </td>
+
+                                <td>
+                                    {% if recorrencia.conta %}
+                                        <i class="bi bi-bank me-1"></i>
+                                        {{ recorrencia.conta.nome }}
+                                    {% else %}
+                                        <span class="text-muted">Sem conta</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if recorrencia.categoria %}
+                                        {{ recorrencia.categoria.nome }}
+                                    {% else %}
+                                        <span class="text-muted">Sem categoria</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <span class="badge bg-secondary">
+                                        {{ recorrencia.frequencia }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div>
+                                        Início: {{ recorrencia.data_inicio|date:"d/m/Y" }}
+                                    </div>
+
+                                    {% if recorrencia.data_fim %}
+                                        <small class="text-muted">
+                                            Fim: {{ recorrencia.data_fim|date:"d/m/Y" }}
+                                        </small>
+                                    {% else %}
+                                        <small class="text-muted">
+                                            Sem data final
+                                        </small>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if recorrencia.status_padrao == "Pago" %}
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                            Pago
+                                        </span>
+                                    {% elif recorrencia.status_padrao == "Pendente" %}
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                                            Pendente
+                                        </span>
+                                    {% else %}
+                                        {{ recorrencia.status_padrao }}
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if recorrencia.ativa %}
+                                        <span class="badge bg-success">
+                                            Ativa
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark border">
+                                            Inativa
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="text-center">
+                                    <div class="btn-group btn-group-sm">
+                                        <a 
+                                            href="{% url 'editar_recorrencia' recorrencia.id %}" 
+                                            class="btn btn-outline-secondary"
+                                        >
+                                            Editar
+                                        </a>
+
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-outline-danger"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalExcluirRecorrencia{{ recorrencia.id }}"
+                                        >
+                                            Excluir
+                                        </button>
+                                    </div>
+
+                                    <div 
+                                        class="modal fade" 
+                                        id="modalExcluirRecorrencia{{ recorrencia.id }}" 
+                                        tabindex="-1" 
+                                        aria-hidden="true"
+                                    >
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">
+                                                        Excluir recorrência
+                                                    </h5>
+
+                                                    <button 
+                                                        type="button" 
+                                                        class="btn-close" 
+                                                        data-bs-dismiss="modal"
+                                                        aria-label="Fechar"
+                                                    ></button>
+                                                </div>
+
+                                                <div class="modal-body text-start">
+                                                    Tem certeza que deseja excluir a recorrência
+                                                    <strong>{{ recorrencia.descricao }}</strong>?
+
+                                                    <div class="alert alert-warning mt-3 mb-0">
+                                                        As transações que já foram geradas não serão removidas automaticamente.
+                                                    </div>
+                                                </div>
+
+                                                <div class="modal-footer">
+                                                    <button 
+                                                        type="button" 
+                                                        class="btn btn-outline-secondary" 
+                                                        data-bs-dismiss="modal"
+                                                    >
+                                                        Cancelar
+                                                    </button>
+
+                                                    <form 
+                                                        method="post" 
+                                                        action="{% url 'excluir_recorrencia' recorrencia.id %}"
+                                                    >
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-danger">
+                                                            Excluir
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <div class="form-page-icon mx-auto mb-3">
+                    <i class="bi bi-arrow-repeat"></i>
+                </div>
+
+                <h5 class="fw-bold">Nenhuma recorrência cadastrada</h5>
+
+                <p class="text-muted mb-4">
+                    Cadastre despesas ou receitas que se repetem todos os meses.
+                </p>
+
+                <a href="{% url 'criar_recorrencia' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Criar primeira recorrência
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

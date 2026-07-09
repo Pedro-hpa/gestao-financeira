@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if meta %}Editar Meta{% else %}Nova Meta{% endif %}
+{% endblock %}
+
+{% block page_title %}
+    {% if meta %}Editar meta financeira{% else %}Nova meta financeira{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card app-card border-0">
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+                    <div class="form-page-icon mx-auto mb-3">
+                        <i class="bi bi-bullseye"></i>
+                    </div>
+
+                    <h4 class="fw-bold mb-1">
+                        {% if meta %}
+                            Editar Meta Financeira
+                        {% else %}
+                            Nova Meta Financeira
+                        {% endif %}
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Cadastre objetivos financeiros e acompanhe o progresso até o valor alvo.
+                    </p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Nome da meta
+                        </label>
+                        {{ form.nome }}
+                        {{ form.nome.errors }}
+
+                        <div class="form-text">
+                            Exemplo: Reserva de emergência, viagem, carro, quitação de dívida.
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Valor alvo
+                            </label>
+                            {{ form.valor_alvo }}
+                            {{ form.valor_alvo.errors }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Valor atual
+                            </label>
+                            {{ form.valor_atual }}
+                            {{ form.valor_atual.errors }}
+
+                            <div class="form-text">
+                                Quanto você já tem acumulado para essa meta.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            Data limite
+                        </label>
+                        {{ form.data_limite }}
+                        {{ form.data_limite.errors }}
+
+                        <div class="form-text">
+                            Campo opcional. Use se quiser definir um prazo para atingir a meta.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info border-0 shadow-sm">
+                        <i class="bi bi-info-circle me-1"></i>
+                        O sistema calcula automaticamente o percentual de progresso com base no valor atual e no valor alvo.
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold">
+                            <i class="bi bi-check2-circle me-1"></i>
+                            Salvar Meta
+                        </button>
+
+                        <a href="{% url 'listar_metas' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,458 +1,657 @@
 {% extends 'base.html' %}
+
 {% block title %}Relatórios{% endblock %}
+{% block page_title %}Relatórios financeiros{% endblock %}
 
 {% block content %}
-<div class="container py-5">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="display-6 fw-bold mb-1">Relatórios Financeiros</h1>
-            <p class="text-muted mb-0">
-                Analise suas receitas, despesas, contas, categorias e evolução financeira.
-            </p>
-        </div>
-
-        <div>
-            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
-                Voltar ao Dashboard
-            </a>
-        </div>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Relatórios Financeiros</h2>
+        <p class="text-muted mb-0">
+            Analise receitas, despesas, contas, cartões, categorias e evolução financeira.
+        </p>
     </div>
 
-    <form method="get" class="row g-3 mb-4 align-items-end">
-        <div class="col-md-2">
-            <label for="data_inicio" class="form-label">De:</label>
-            <input 
-                type="date" 
-                name="data_inicio" 
-                id="data_inicio" 
-                class="form-control" 
-                value="{{ request.GET.data_inicio }}"
-            >
-        </div>
+    <div class="mt-3 mt-md-0 d-flex flex-wrap gap-2">
+        <a href="{% url 'exportar_excel' %}?{{ request.GET.urlencode }}" class="btn btn-success">
+            <i class="bi bi-file-earmark-excel me-1"></i>
+            Exportar Excel
+        </a>
 
-        <div class="col-md-2">
-            <label for="data_fim" class="form-label">Até:</label>
-            <input 
-                type="date" 
-                name="data_fim" 
-                id="data_fim" 
-                class="form-control" 
-                value="{{ request.GET.data_fim }}"
-            >
-        </div>
+        <a href="{% url 'exportar_pdf' %}?{{ request.GET.urlencode }}" class="btn btn-danger">
+            <i class="bi bi-file-earmark-pdf me-1"></i>
+            Exportar PDF
+        </a>
 
-        <div class="col-md-2">
-            <label for="tipo" class="form-label">Tipo:</label>
-            <select name="tipo" id="tipo" class="form-select">
-                <option value="">Todos</option>
-                <option value="Receita" {% if request.GET.tipo == "Receita" %}selected{% endif %}>
-                    Receita
-                </option>
-                <option value="Despesa" {% if request.GET.tipo == "Despesa" %}selected{% endif %}>
-                    Despesa
-                </option>
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <label for="conta" class="form-label">Conta:</label>
-            <select name="conta" id="conta" class="form-select">
-                <option value="">Todas</option>
-
-                {% for conta in contas %}
-                    <option 
-                        value="{{ conta.id }}" 
-                        {% if request.GET.conta == conta.id|stringformat:"s" %}selected{% endif %}
-                    >
-                        {{ conta.nome }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <label for="categoria" class="form-label">Categoria:</label>
-            <select name="categoria" id="categoria" class="form-select">
-                <option value="">Todas</option>
-
-                {% for categoria in categorias %}
-                    <option 
-                        value="{{ categoria.id }}" 
-                        {% if request.GET.categoria == categoria.id|stringformat:"s" %}selected{% endif %}
-                    >
-                        {{ categoria.nome }}
-                    </option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="col-md-2">
-            <label for="status" class="form-label">Status:</label>
-            <select name="status" id="status" class="form-select">
-                <option value="">Todos</option>
-                <option value="Pago" {% if request.GET.status == "Pago" %}selected{% endif %}>
-                    Pago
-                </option>
-                <option value="Pendente" {% if request.GET.status == "Pendente" %}selected{% endif %}>
-                    Pendente
-                </option>
-            </select>
-        </div>
-
-        <div class="col-md-12 d-grid">
-            <button type="submit" class="btn btn-primary fw-bold">
-                Filtrar
-            </button>
-        </div>
-    </form>
-
-    <div class="row text-center mb-4">
-        <div class="col-md-3 mb-3">
-            <div class="card border-success shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">Receitas</h6>
-                    <p class="fs-4 fw-bold text-success mb-0">
-                        R$ {{ total_receitas|floatformat:2 }}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card border-danger shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">Despesas</h6>
-                    <p class="fs-4 fw-bold text-danger mb-0">
-                        R$ {{ total_despesas|floatformat:2 }}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card border-primary shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">Saldo do Período</h6>
-                    <p class="fs-4 fw-bold text-primary mb-0">
-                        R$ {{ saldo_periodo|floatformat:2 }}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3 mb-3">
-            <div class="card border-dark shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">Transações</h6>
-                    <p class="fs-4 fw-bold mb-0">
-                        {{ quantidade_transacoes }}
-                    </p>
-                </div>
-            </div>
-        </div>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+            Voltar ao Dashboard
+        </a>
     </div>
-
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">Média das Despesas</h6>
-                    <p class="fs-5 fw-bold mb-0">
-                        R$ {{ media_despesas|floatformat:2 }}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">Maior Receita</h6>
-
-                    {% if maior_receita %}
-                        <p class="fw-bold mb-1">{{ maior_receita.descricao }}</p>
-                        <p class="text-success mb-0">
-                            R$ {{ maior_receita.valor|floatformat:2 }}
-                        </p>
-                    {% else %}
-                        <p class="text-muted mb-0">Nenhuma receita encontrada.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h6 class="text-muted">Maior Despesa</h6>
-
-                    {% if maior_despesa %}
-                        <p class="fw-bold mb-1">{{ maior_despesa.descricao }}</p>
-                        <p class="text-danger mb-0">
-                            R$ {{ maior_despesa.valor|floatformat:2 }}
-                        </p>
-                    {% else %}
-                        <p class="text-muted mb-0">Nenhuma despesa encontrada.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    {% if resumo_por_conta %}
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h5 class="card-title mb-3">Resumo por Conta</h5>
-
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Conta</th>
-                                <th>Tipo</th>
-                                <th>Receitas</th>
-                                <th>Despesas</th>
-                                <th>Saldo</th>
-                                <th>Qtd.</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for item in resumo_por_conta %}
-                                <tr>
-                                    <td>{{ item.conta_nome }}</td>
-                                    <td>{{ item.conta_tipo }}</td>
-
-                                    <td class="text-success">
-                                        R$ {{ item.receitas|floatformat:2 }}
-                                    </td>
-
-                                    <td class="text-danger">
-                                        R$ {{ item.despesas|floatformat:2 }}
-                                    </td>
-
-                                    <td class="fw-bold">
-                                        {% if item.saldo >= 0 %}
-                                            <span class="text-success">
-                                                R$ {{ item.saldo|floatformat:2 }}
-                                            </span>
-                                        {% else %}
-                                            <span class="text-danger">
-                                                R$ {{ item.saldo|floatformat:2 }}
-                                            </span>
-                                        {% endif %}
-                                    </td>
-
-                                    <td>{{ item.quantidade }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    {% endif %}
-
-    <div class="row mb-4">
-        <div class="col-md-8 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Receitas x Despesas por Mês</h5>
-                    <canvas id="graficoMensal"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Despesas por Categoria</h5>
-                    <canvas id="graficoCategorias"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row mb-4">
-        <div class="col-md-7 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Resumo Mensal</h5>
-
-                    {% if movimento_mensal %}
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Mês</th>
-                                        <th>Receitas</th>
-                                        <th>Despesas</th>
-                                        <th>Saldo</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {% for item in movimento_mensal %}
-                                        <tr>
-                                            <td>{{ item.mes|date:"m/Y" }}</td>
-
-                                            <td class="text-success">
-                                                R$ {{ item.receitas|default:0|floatformat:2 }}
-                                            </td>
-
-                                            <td class="text-danger">
-                                                R$ {{ item.despesas|default:0|floatformat:2 }}
-                                            </td>
-
-                                            <td>
-                                                {% if item.saldo >= 0 %}
-                                                    <span class="text-success">
-                                                        R$ {{ item.saldo|floatformat:2 }}
-                                                    </span>
-                                                {% else %}
-                                                    <span class="text-danger">
-                                                        R$ {{ item.saldo|floatformat:2 }}
-                                                    </span>
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p class="text-muted mb-0">Nenhum dado mensal encontrado.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-5 mb-3">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Despesas por Categoria</h5>
-
-                    {% if despesas_por_categoria %}
-                        <div class="table-responsive">
-                            <table class="table table-striped table-hover align-middle">
-                                <thead class="table-dark">
-                                    <tr>
-                                        <th>Categoria</th>
-                                        <th>Qtd.</th>
-                                        <th>Total</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {% for item in despesas_por_categoria %}
-                                        <tr>
-                                            <td>
-                                                {% if item.categoria__nome %}
-                                                    {{ item.categoria__nome }}
-                                                {% else %}
-                                                    Sem categoria
-                                                {% endif %}
-                                            </td>
-
-                                            <td>{{ item.quantidade }}</td>
-
-                                            <td class="text-danger">
-                                                R$ {{ item.total|floatformat:2 }}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    {% else %}
-                        <p class="text-muted mb-0">Nenhuma despesa por categoria encontrada.</p>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
-            <h5 class="card-title mb-3">Transações do Período</h5>
-
-            {% if transacoes %}
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>Descrição</th>
-                                <th>Tipo</th>
-                                <th>Categoria</th>
-                                <th>Conta</th>
-                                <th>Status</th>
-                                <th>Valor</th>
-                                <th>Data</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {% for transacao in transacoes %}
-                                <tr>
-                                    <td>{{ transacao.descricao }}</td>
-
-                                    <td>
-                                        {% if transacao.tipo == "Receita" %}
-                                            <span class="badge bg-success">Receita</span>
-                                        {% elif transacao.tipo == "Despesa" %}
-                                            <span class="badge bg-danger">Despesa</span>
-                                        {% else %}
-                                            {{ transacao.tipo }}
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        {% if transacao.categoria %}
-                                            {{ transacao.categoria.nome }}
-                                        {% else %}
-                                            <span class="text-muted">Sem categoria</span>
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        {% if transacao.conta %}
-                                            {{ transacao.conta.nome }}
-                                        {% else %}
-                                            <span class="text-muted">Sem conta</span>
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        {% if transacao.status == "Pago" %}
-                                            <span class="badge bg-primary">Pago</span>
-                                        {% elif transacao.status == "Pendente" %}
-                                            <span class="badge bg-warning text-dark">Pendente</span>
-                                        {% else %}
-                                            {{ transacao.status }}
-                                        {% endif %}
-                                    </td>
-
-                                    <td>
-                                        R$ {{ transacao.valor|floatformat:2 }}
-                                    </td>
-
-                                    <td>
-                                        {{ transacao.data|date:"d/m/Y" }}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            {% else %}
-                <p class="text-muted mb-0">Nenhuma transação encontrada no período.</p>
-            {% endif %}
-        </div>
-    </div>
-
 </div>
 
+
+<div class="card app-card border-0 mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label for="data_inicio" class="form-label">De</label>
+                <input 
+                    type="date" 
+                    name="data_inicio" 
+                    id="data_inicio" 
+                    class="form-control" 
+                    value="{{ request.GET.data_inicio }}"
+                >
+            </div>
+
+            <div class="col-md-2">
+                <label for="data_fim" class="form-label">Até</label>
+                <input 
+                    type="date" 
+                    name="data_fim" 
+                    id="data_fim" 
+                    class="form-control" 
+                    value="{{ request.GET.data_fim }}"
+                >
+            </div>
+
+            <div class="col-md-2">
+                <label for="tipo" class="form-label">Tipo</label>
+                <select name="tipo" id="tipo" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="Receita" {% if request.GET.tipo == "Receita" %}selected{% endif %}>
+                        Receita
+                    </option>
+                    <option value="Despesa" {% if request.GET.tipo == "Despesa" %}selected{% endif %}>
+                        Despesa
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="conta" class="form-label">Conta</label>
+                <select name="conta" id="conta" class="form-select">
+                    <option value="">Todas</option>
+
+                    {% for conta in contas %}
+                        <option 
+                            value="{{ conta.id }}" 
+                            {% if request.GET.conta == conta.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ conta.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="cartao" class="form-label">Cartão</label>
+                <select name="cartao" id="cartao" class="form-select">
+                    <option value="">Todos</option>
+
+                    {% for cartao in cartoes %}
+                        <option 
+                            value="{{ cartao.id }}" 
+                            {% if request.GET.cartao == cartao.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ cartao.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="categoria" class="form-label">Categoria</label>
+                <select name="categoria" id="categoria" class="form-select">
+                    <option value="">Todas</option>
+
+                    {% for categoria in categorias %}
+                        <option 
+                            value="{{ categoria.id }}" 
+                            {% if request.GET.categoria == categoria.id|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ categoria.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="status" class="form-label">Status</label>
+                <select name="status" id="status" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="Pago" {% if request.GET.status == "Pago" %}selected{% endif %}>
+                        Pago
+                    </option>
+                    <option value="Pendente" {% if request.GET.status == "Pendente" %}selected{% endif %}>
+                        Pendente
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <label for="origem" class="form-label">Origem</label>
+                <select name="origem" id="origem" class="form-select">
+                    <option value="">Todas</option>
+                    <option value="Manual" {% if request.GET.origem == "Manual" %}selected{% endif %}>
+                        Manual
+                    </option>
+                    <option value="Recorrente" {% if request.GET.origem == "Recorrente" %}selected{% endif %}>
+                        Recorrente
+                    </option>
+                    <option value="Parcelada" {% if request.GET.origem == "Parcelada" %}selected{% endif %}>
+                        Parcelada
+                    </option>
+                    <option value="Cartão" {% if request.GET.origem == "Cartão" %}selected{% endif %}>
+                        Cartão
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-8 d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-primary fw-semibold">
+                    <i class="bi bi-funnel me-1"></i>
+                    Filtrar
+                </button>
+
+                <a href="{% url 'relatorios' %}" class="btn btn-outline-secondary fw-semibold">
+                    Limpar filtros
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<div class="row text-center mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <div class="dashboard-icon bg-success-subtle text-success mx-auto mb-3">
+                    <i class="bi bi-arrow-down-circle"></i>
+                </div>
+
+                <h6 class="text-muted">Receitas</h6>
+                <p class="fs-4 fw-bold text-success mb-0">
+                    R$ {{ total_receitas|floatformat:2 }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <div class="dashboard-icon bg-danger-subtle text-danger mx-auto mb-3">
+                    <i class="bi bi-arrow-up-circle"></i>
+                </div>
+
+                <h6 class="text-muted">Despesas</h6>
+                <p class="fs-4 fw-bold text-danger mb-0">
+                    R$ {{ total_despesas|floatformat:2 }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <div class="dashboard-icon bg-primary-subtle text-primary mx-auto mb-3">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+
+                <h6 class="text-muted">Saldo do período</h6>
+                <p class="fs-4 fw-bold text-primary mb-0">
+                    R$ {{ saldo_periodo|floatformat:2 }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <div class="dashboard-icon bg-dark-subtle text-dark mx-auto mb-3">
+                    <i class="bi bi-list-check"></i>
+                </div>
+
+                <h6 class="text-muted">Transações</h6>
+                <p class="fs-4 fw-bold mb-0">
+                    {{ quantidade_transacoes }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Média das despesas</h6>
+                <p class="fs-5 fw-bold mb-0">
+                    R$ {{ media_despesas|floatformat:2 }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Maior receita</h6>
+
+                {% if maior_receita %}
+                    <p class="fw-bold mb-1">{{ maior_receita.descricao }}</p>
+                    <p class="text-success mb-0">
+                        R$ {{ maior_receita.valor|floatformat:2 }}
+                    </p>
+                {% else %}
+                    <p class="text-muted mb-0">Nenhuma receita encontrada.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Maior despesa</h6>
+
+                {% if maior_despesa %}
+                    <p class="fw-bold mb-1">{{ maior_despesa.descricao }}</p>
+                    <p class="text-danger mb-0">
+                        R$ {{ maior_despesa.valor|floatformat:2 }}
+                    </p>
+                {% else %}
+                    <p class="text-muted mb-0">Nenhuma despesa encontrada.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% if resumo_por_conta %}
+    <div class="card app-card border-0 mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">
+                <i class="bi bi-bank me-1"></i>
+                Resumo por conta
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Conta</th>
+                            <th>Tipo</th>
+                            <th>Receitas</th>
+                            <th>Despesas</th>
+                            <th>Saldo</th>
+                            <th>Qtd.</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in resumo_por_conta %}
+                            <tr>
+                                <td>{{ item.conta_nome }}</td>
+                                <td>{{ item.conta_tipo }}</td>
+
+                                <td class="text-success">
+                                    R$ {{ item.receitas|floatformat:2 }}
+                                </td>
+
+                                <td class="text-danger">
+                                    R$ {{ item.despesas|floatformat:2 }}
+                                </td>
+
+                                <td class="fw-bold">
+                                    {% if item.saldo >= 0 %}
+                                        <span class="text-success">
+                                            R$ {{ item.saldo|floatformat:2 }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-danger">
+                                            R$ {{ item.saldo|floatformat:2 }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ item.quantidade }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+
+{% if resumo_por_cartao %}
+    <div class="card app-card border-0 mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-3">
+                <i class="bi bi-credit-card me-1"></i>
+                Resumo por cartão
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Cartão</th>
+                            <th>Total lançado</th>
+                            <th>Qtd. transações</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for item in resumo_por_cartao %}
+                            <tr>
+                                <td>{{ item.cartao_nome }}</td>
+                                <td class="text-danger fw-semibold">
+                                    R$ {{ item.total|floatformat:2 }}
+                                </td>
+                                <td>{{ item.quantidade }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+
+<div class="row mb-4">
+    <div class="col-md-8 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    Receitas x despesas por mês
+                </h5>
+
+                <canvas id="graficoMensal"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-3">
+        <div class="card app-card border-0 h-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    Despesas por categoria
+                </h5>
+
+                <canvas id="graficoCategorias"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-4">
+    <div class="col-md-7 mb-3">
+        <div class="card app-card border-0">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    Resumo mensal
+                </h5>
+
+                {% if movimento_mensal %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mês</th>
+                                    <th>Receitas</th>
+                                    <th>Despesas</th>
+                                    <th>Saldo</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for item in movimento_mensal %}
+                                    <tr>
+                                        <td>{{ item.mes|date:"m/Y" }}</td>
+
+                                        <td class="text-success">
+                                            R$ {{ item.receitas|default:0|floatformat:2 }}
+                                        </td>
+
+                                        <td class="text-danger">
+                                            R$ {{ item.despesas|default:0|floatformat:2 }}
+                                        </td>
+
+                                        <td>
+                                            {% if item.saldo >= 0 %}
+                                                <span class="text-success fw-semibold">
+                                                    R$ {{ item.saldo|floatformat:2 }}
+                                                </span>
+                                            {% else %}
+                                                <span class="text-danger fw-semibold">
+                                                    R$ {{ item.saldo|floatformat:2 }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">
+                        Nenhum dado mensal encontrado.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-5 mb-3">
+        <div class="card app-card border-0">
+            <div class="card-body">
+                <h5 class="card-title mb-3">
+                    Despesas por categoria
+                </h5>
+
+                {% if despesas_por_categoria %}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Categoria</th>
+                                    <th>Qtd.</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for item in despesas_por_categoria %}
+                                    <tr>
+                                        <td>
+                                            {% if item.categoria__nome %}
+                                                {{ item.categoria__nome }}
+                                            {% else %}
+                                                Sem categoria
+                                            {% endif %}
+                                        </td>
+
+                                        <td>{{ item.quantidade }}</td>
+
+                                        <td class="text-danger fw-semibold">
+                                            R$ {{ item.total|floatformat:2 }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">
+                        Nenhuma despesa por categoria encontrada.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="card app-card border-0 mb-4">
+    <div class="card-body">
+        <h5 class="card-title mb-3">
+            <i class="bi bi-list-ul me-1"></i>
+            Transações do período
+        </h5>
+
+        {% if transacoes %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Tipo</th>
+                            <th>Categoria</th>
+                            <th>Conta/Cartão</th>
+                            <th>Status</th>
+                            <th>Origem</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for transacao in transacoes %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">
+                                        {{ transacao.descricao }}
+                                    </div>
+
+                                    {% if transacao.numero_parcela and transacao.total_parcelas %}
+                                        <small class="text-muted">
+                                            Parcela {{ transacao.numero_parcela }}/{{ transacao.total_parcelas }}
+                                        </small>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if transacao.tipo == "Receita" %}
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                            Receita
+                                        </span>
+                                    {% elif transacao.tipo == "Despesa" %}
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">
+                                            Despesa
+                                        </span>
+                                    {% else %}
+                                        {{ transacao.tipo }}
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if transacao.categoria %}
+                                        {{ transacao.categoria.nome }}
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Sem categoria
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if transacao.cartao %}
+                                        <div>
+                                            <i class="bi bi-credit-card me-1"></i>
+                                            {{ transacao.cartao.nome }}
+                                        </div>
+
+                                        {% if transacao.fatura %}
+                                            <small class="text-muted">
+                                                Fatura {{ transacao.fatura.mes|stringformat:"02d" }}/{{ transacao.fatura.ano }}
+                                            </small>
+                                        {% endif %}
+                                    {% elif transacao.conta %}
+                                        <div>
+                                            <i class="bi bi-bank me-1"></i>
+                                            {{ transacao.conta.nome }}
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Sem conta
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if transacao.status == "Pago" %}
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">
+                                            Pago
+                                        </span>
+                                    {% elif transacao.status == "Pendente" %}
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">
+                                            Pendente
+                                        </span>
+                                    {% else %}
+                                        {{ transacao.status }}
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if transacao.origem == "Manual" %}
+                                        <span class="badge bg-light text-dark border">
+                                            Manual
+                                        </span>
+                                    {% elif transacao.origem == "Recorrente" %}
+                                        <span class="badge bg-secondary">
+                                            Recorrente
+                                        </span>
+                                    {% elif transacao.origem == "Parcelada" %}
+                                        <span class="badge bg-info text-dark">
+                                            Parcelada
+                                        </span>
+                                    {% elif transacao.origem == "Cartão" %}
+                                        <span class="badge bg-dark">
+                                            Cartão
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark border">
+                                            {{ transacao.origem }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td class="fw-semibold">
+                                    R$ {{ transacao.valor|floatformat:2 }}
+                                </td>
+
+                                <td>
+                                    {{ transacao.data|date:"d/m/Y" }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">
+                Nenhuma transação encontrada no período.
+            </p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>

@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if cartao %}Editar Cartão{% else %}Novo Cartão{% endif %}
+{% endblock %}
+
+{% block page_title %}
+    {% if cartao %}Editar cartão{% else %}Novo cartão de crédito{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card app-card border-0">
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+                    <div class="form-page-icon mx-auto mb-3">
+                        <i class="bi bi-credit-card"></i>
+                    </div>
+
+                    <h4 class="fw-bold mb-1">
+                        {% if cartao %}
+                            Editar Cartão
+                        {% else %}
+                            Novo Cartão de Crédito
+                        {% endif %}
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Cadastre cartões para controlar limite, vencimento, fechamento e faturas.
+                    </p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Nome do cartão
+                        </label>
+                        {{ form.nome }}
+                        {{ form.nome.errors }}
+
+                        <div class="form-text">
+                            Exemplo: Nubank, Itaú, Inter, C6 Bank.
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Limite
+                        </label>
+                        {{ form.limite }}
+                        {{ form.limite.errors }}
+                    </div>
+
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-calendar-event me-1"></i>
+                                Datas da fatura
+                            </h6>
+
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        Dia de fechamento
+                                    </label>
+                                    {{ form.dia_fechamento }}
+                                    {{ form.dia_fechamento.errors }}
+
+                                    <div class="form-text">
+                                        Dia em que a fatura fecha.
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label fw-semibold">
+                                        Dia de vencimento
+                                    </label>
+                                    {{ form.dia_vencimento }}
+                                    {{ form.dia_vencimento.errors }}
+
+                                    <div class="form-text">
+                                        Dia em que a fatura vence.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">
+                            Conta de pagamento da fatura
+                        </label>
+                        {{ form.conta_pagamento }}
+                        {{ form.conta_pagamento.errors }}
+
+                        <div class="form-text">
+                            Conta usada para pagar a fatura do cartão.
+                            Ainda não tem conta?
+                            <a href="{% url 'criar_conta' %}">Criar conta</a>.
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info border-0 shadow-sm">
+                        <i class="bi bi-info-circle me-1"></i>
+                        As compras lançadas neste cartão serão agrupadas em faturas conforme o dia de fechamento e vencimento.
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold">
+                            <i class="bi bi-check2-circle me-1"></i>
+                            Salvar Cartão
+                        </button>
+
+                        <a href="{% url 'listar_cartoes' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

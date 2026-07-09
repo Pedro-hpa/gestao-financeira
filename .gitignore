@@ -1,11 +1,15 @@
 # Python
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyo
+*.pyd
 
 # Django
 *.log
 local_settings.py
+*.sqlite3
+media/
+staticfiles/
 db.sqlite3
 db.sqlite3-journal
 
@@ -24,8 +28,13 @@ Thumbs.db
 
 # VS Code
 .vscode/
+.idea/
 
 # Testes/cache
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Configurações locais
+.env
+.env.local

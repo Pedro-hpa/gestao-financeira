@@ -1,0 +1,200 @@
+{% extends 'base.html' %}
+
+{% block title %}Metas Financeiras{% endblock %}
+{% block page_title %}Metas financeiras{% endblock %}
+
+{% block content %}
+
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1">Metas Financeiras</h2>
+        <p class="text-muted mb-0">
+            Acompanhe objetivos como reserva de emergência, viagem, quitação de dívidas ou investimentos.
+        </p>
+    </div>
+
+    <div class="mt-3 mt-md-0 d-flex flex-wrap gap-2">
+        <a href="{% url 'criar_meta' %}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>
+            Nova meta
+        </a>
+
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+            Voltar ao Dashboard
+        </a>
+    </div>
+</div>
+
+
+<div class="card app-card border-0">
+    <div class="card-body">
+        {% if metas %}
+            <div class="row">
+                {% for meta in metas %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="border rounded-4 p-4 h-100 bg-light">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">
+                                        <i class="bi bi-bullseye me-1"></i>
+                                        {{ meta.nome }}
+                                    </h5>
+
+                                    {% if meta.data_limite %}
+                                        <p class="text-muted small mb-0">
+                                            Prazo: {{ meta.data_limite|date:"d/m/Y" }}
+                                        </p>
+                                    {% else %}
+                                        <p class="text-muted small mb-0">
+                                            Sem prazo definido
+                                        </p>
+                                    {% endif %}
+                                </div>
+
+                                <div class="dashboard-icon bg-primary-subtle text-primary">
+                                    <i class="bi bi-flag"></i>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Valor atual</small>
+                                <div class="fs-5 fw-bold">
+                                    R$ {{ meta.valor_atual|floatformat:2 }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-muted">Valor alvo</small>
+                                <div class="fs-5 fw-bold">
+                                    R$ {{ meta.valor_alvo|floatformat:2 }}
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <small class="fw-semibold">
+                                        Progresso
+                                    </small>
+
+                                    <small class="fw-semibold">
+                                        {{ meta.percentual|floatformat:2 }}%
+                                    </small>
+                                </div>
+
+                                <div class="progress" style="height: 12px;">
+                                    <div 
+                                        class="progress-bar" 
+                                        role="progressbar" 
+                                        style="width: {{ meta.percentual|floatformat:0 }}%;"
+                                        aria-valuenow="{{ meta.percentual|floatformat:0 }}"
+                                        aria-valuemin="0"
+                                        aria-valuemax="100"
+                                    ></div>
+                                </div>
+                            </div>
+
+                            {% if meta.valor_atual >= meta.valor_alvo %}
+                                <div class="alert alert-success py-2 mb-3">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Meta alcançada!
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info py-2 mb-3">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Continue acompanhando o progresso até atingir o valor alvo.
+                                </div>
+                            {% endif %}
+
+                            <div class="d-flex flex-wrap gap-2">
+                                <a 
+                                    href="{% url 'editar_meta' meta.id %}" 
+                                    class="btn btn-sm btn-outline-secondary"
+                                >
+                                    Editar
+                                </a>
+
+                                <button 
+                                    type="button" 
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalExcluirMeta{{ meta.id }}"
+                                >
+                                    Excluir
+                                </button>
+                            </div>
+
+                            <div 
+                                class="modal fade" 
+                                id="modalExcluirMeta{{ meta.id }}" 
+                                tabindex="-1" 
+                                aria-hidden="true"
+                            >
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">
+                                                Excluir meta
+                                            </h5>
+
+                                            <button 
+                                                type="button" 
+                                                class="btn-close" 
+                                                data-bs-dismiss="modal"
+                                                aria-label="Fechar"
+                                            ></button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            Tem certeza que deseja excluir a meta
+                                            <strong>{{ meta.nome }}</strong>?
+                                        </div>
+
+                                        <div class="modal-footer">
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-outline-secondary" 
+                                                data-bs-dismiss="modal"
+                                            >
+                                                Cancelar
+                                            </button>
+
+                                            <form 
+                                                method="post" 
+                                                action="{% url 'excluir_meta' meta.id %}"
+                                            >
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger">
+                                                    Excluir
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <div class="form-page-icon mx-auto mb-3">
+                    <i class="bi bi-bullseye"></i>
+                </div>
+
+                <h5 class="fw-bold">Nenhuma meta cadastrada</h5>
+
+                <p class="text-muted mb-4">
+                    Crie sua primeira meta para acompanhar seu progresso financeiro.
+                </p>
+
+                <a href="{% url 'criar_meta' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i>
+                    Criar primeira meta
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

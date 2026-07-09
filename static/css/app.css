@@ -1,0 +1,261 @@
+:root {
+    --app-sidebar-width: 260px;
+    --app-bg: #f4f6f9;
+    --app-dark: #111827;
+    --app-dark-soft: #1f2937;
+    --app-border: #e5e7eb;
+    --app-radius: 18px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--app-bg);
+    color: #1f2937;
+}
+
+a {
+    text-decoration: none;
+}
+
+.app-layout {
+    min-height: 100vh;
+    display: flex;
+    background: var(--app-bg);
+}
+
+.app-sidebar {
+    width: var(--app-sidebar-width);
+    min-height: 100vh;
+    background: linear-gradient(180deg, #111827 0%, #1f2937 100%);
+    color: #ffffff;
+    padding: 24px 18px;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar-brand {
+    margin-bottom: 28px;
+    padding: 0 8px;
+}
+
+.sidebar-brand a {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.sidebar-link {
+    color: #d1d5db;
+    padding: 11px 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.sidebar-link i {
+    font-size: 1.05rem;
+}
+
+.sidebar-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.09);
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 16px 8px 0;
+}
+
+.app-content {
+    margin-left: var(--app-sidebar-width);
+    width: calc(100% - var(--app-sidebar-width));
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.app-topbar {
+    min-height: 76px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--app-border);
+    padding: 16px 28px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.app-card {
+    border-radius: var(--app-radius);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+}
+
+.card {
+    border-radius: var(--app-radius);
+}
+
+.dashboard-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
+
+.form-page-icon {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+    background: #e0ecff;
+    color: #0d6efd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table th {
+    color: #4b5563;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge {
+    font-weight: 600;
+    padding: 0.45em 0.65em;
+}
+
+.btn {
+    border-radius: 12px;
+}
+
+.form-control,
+.form-select {
+    border-radius: 12px;
+    border-color: #d1d5db;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.alert {
+    border-radius: 14px;
+}
+
+.progress {
+    border-radius: 999px;
+    background-color: #e5e7eb;
+}
+
+.progress-bar {
+    border-radius: 999px;
+}
+
+.bg-success-subtle {
+    background-color: #d1e7dd !important;
+}
+
+.bg-danger-subtle {
+    background-color: #f8d7da !important;
+}
+
+.bg-primary-subtle {
+    background-color: #cfe2ff !important;
+}
+
+.bg-warning-subtle {
+    background-color: #fff3cd !important;
+}
+
+.bg-dark-subtle {
+    background-color: #dee2e6 !important;
+}
+
+.text-warning-emphasis {
+    color: #664d03 !important;
+}
+
+.border-success-subtle {
+    border-color: #badbcc !important;
+}
+
+.border-danger-subtle {
+    border-color: #f1aeb5 !important;
+}
+
+.border-primary-subtle {
+    border-color: #9ec5fe !important;
+}
+
+.border-warning-subtle {
+    border-color: #ffecb5 !important;
+}
+
+@media (max-width: 991.98px) {
+    .app-content {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .app-sidebar {
+        display: none;
+    }
+
+    main.container-fluid {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .dashboard-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.15rem;
+    }
+
+    .form-page-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.35rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .table th,
+    .table td {
+        font-size: 0.85rem;
+    }
+}

@@ -1,16 +1,26 @@
 {% extends 'base.html' %}
+
 {% block title %}
     {% if transacao %}Editar Transação{% else %}Nova Transação{% endif %}
 {% endblock %}
 
-{% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-7">
-            <div class="card shadow border-top border-4 border-primary">
-                <div class="card-body">
+{% block page_title %}
+    {% if transacao %}Editar transação{% else %}Nova transação{% endif %}
+{% endblock %}
 
-                    <h4 class="card-title text-center mb-4">
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-7">
+        <div class="card app-card border-0">
+            <div class="card-body p-4">
+
+                <div class="text-center mb-4">
+                    <div class="form-page-icon mx-auto mb-3">
+                        <i class="bi bi-cash-coin"></i>
+                    </div>
+
+                    <h4 class="fw-bold mb-1">
                         {% if transacao %}
                             Editar Transação
                         {% else %}
@@ -18,76 +28,210 @@
                         {% endif %}
                     </h4>
 
-                    <form method="post">
-                        {% csrf_token %}
-                        {{ form.non_field_errors }}
+                    <p class="text-muted mb-0">
+                        Cadastre receitas, despesas, compras parceladas ou lançamentos no cartão.
+                    </p>
+                </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Descrição</label>
-                            {{ form.descricao }}
-                            {{ form.descricao.errors }}
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
                         </div>
+                    {% endif %}
 
-                        <div class="mb-3">
-                            <label class="form-label">Valor</label>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Descrição
+                        </label>
+                        {{ form.descricao }}
+                        {{ form.descricao.errors }}
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Valor
+                            </label>
                             {{ form.valor }}
                             {{ form.valor.errors }}
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Data</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Data
+                            </label>
                             {{ form.data }}
                             {{ form.data.errors }}
                         </div>
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Tipo</label>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Tipo
+                            </label>
                             {{ form.tipo }}
                             {{ form.tipo.errors }}
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Conta / Carteira</label>
-                            {{ form.conta }}
-                            {{ form.conta.errors }}
-
-                            <div class="form-text">
-                                Ainda não tem conta?
-                                <a href="{% url 'criar_conta' %}">Criar conta</a>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Categoria</label>
-                            {{ form.categoria }}
-                            {{ form.categoria.errors }}
-
-                            <div class="form-text">
-                                Ainda não tem categoria?
-                                <a href="{% url 'criar_categoria' %}">Criar categoria</a>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label">Status</label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">
+                                Status
+                            </label>
                             {{ form.status }}
                             {{ form.status.errors }}
                         </div>
+                    </div>
 
-                        <div class="d-grid mt-4">
-                            <button type="submit" class="btn btn-primary fw-bold">
-                                Salvar Transação
-                            </button>
+                    <div class="card border-0 bg-light mb-3">
+                        <div class="card-body">
+                            <h6 class="fw-bold mb-3">
+                                <i class="bi bi-bank me-1"></i>
+                                Conta ou cartão
+                            </h6>
 
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary mt-2">
-                                Cancelar
-                            </a>
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Conta / Carteira
+                                </label>
+                                {{ form.conta }}
+                                {{ form.conta.errors }}
+
+                                <div class="form-text">
+                                    Use conta para lançamentos que afetam diretamente o saldo bancário.
+                                    Ainda não tem conta?
+                                    <a href="{% url 'criar_conta' %}">Criar conta</a>.
+                                </div>
+                            </div>
+
+                            <div class="mb-0">
+                                <label class="form-label fw-semibold">
+                                    Cartão de crédito
+                                </label>
+                                {{ form.cartao }}
+                                {{ form.cartao.errors }}
+
+                                <div class="form-text">
+                                    Use cartão para compras que entram em fatura.
+                                    Ainda não tem cartão?
+                                    <a href="{% url 'criar_cartao' %}">Criar cartão</a>.
+                                </div>
+                            </div>
                         </div>
-                    </form>
+                    </div>
 
-                </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Categoria
+                        </label>
+                        {{ form.categoria }}
+                        {{ form.categoria.errors }}
+
+                        <div class="form-text">
+                            Ainda não tem categoria?
+                            <a href="{% url 'criar_categoria' %}">Criar categoria</a>.
+                        </div>
+                    </div>
+
+                    {% if not transacao %}
+                        <div class="card border-0 bg-light mb-3">
+                            <div class="card-body">
+                                <h6 class="fw-bold mb-3">
+                                    <i class="bi bi-calendar2-plus me-1"></i>
+                                    Parcelamento automático
+                                </h6>
+
+                                <div class="form-check mb-3">
+                                    {{ form.parcelar }}
+                                    <label class="form-check-label fw-semibold" for="{{ form.parcelar.id_for_label }}">
+                                        Parcelar esta transação?
+                                    </label>
+                                    {{ form.parcelar.errors }}
+                                </div>
+
+                                <div class="mb-0">
+                                    <label class="form-label fw-semibold">
+                                        Quantidade de parcelas
+                                    </label>
+                                    {{ form.quantidade_parcelas }}
+                                    {{ form.quantidade_parcelas.errors }}
+
+                                    <div class="form-text">
+                                        Exemplo: uma compra de R$ 3.000 em 10 parcelas vai gerar 10 lançamentos de R$ 300.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary fw-bold">
+                            <i class="bi bi-check2-circle me-1"></i>
+                            Salvar Transação
+                        </button>
+
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+
             </div>
         </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const contaSelect = document.getElementById("id_conta");
+    const cartaoSelect = document.getElementById("id_cartao");
+    const parcelarCheckbox = document.getElementById("id_parcelar");
+    const quantidadeParcelasInput = document.getElementById("id_quantidade_parcelas");
+
+    function atualizarContaCartao() {
+        if (!contaSelect || !cartaoSelect) {
+            return;
+        }
+
+        if (contaSelect.value) {
+            cartaoSelect.disabled = true;
+        } else {
+            cartaoSelect.disabled = false;
+        }
+
+        if (cartaoSelect.value) {
+            contaSelect.disabled = true;
+        } else {
+            contaSelect.disabled = false;
+        }
+    }
+
+    function atualizarParcelamento() {
+        if (!parcelarCheckbox || !quantidadeParcelasInput) {
+            return;
+        }
+
+        quantidadeParcelasInput.disabled = !parcelarCheckbox.checked;
+
+        if (!parcelarCheckbox.checked) {
+            quantidadeParcelasInput.value = "";
+        }
+    }
+
+    if (contaSelect && cartaoSelect) {
+        contaSelect.addEventListener("change", atualizarContaCartao);
+        cartaoSelect.addEventListener("change", atualizarContaCartao);
+        atualizarContaCartao();
+    }
+
+    if (parcelarCheckbox && quantidadeParcelasInput) {
+        parcelarCheckbox.addEventListener("change", atualizarParcelamento);
+        atualizarParcelamento();
+    }
+</script>
 {% endblock %}
